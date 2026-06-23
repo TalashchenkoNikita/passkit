@@ -1,0 +1,1629 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Primary SEO -->
+<title>PassKit — Password Generator & Strength Checker | Генератор паролів</title>
+<meta name="description" content="Free strong password generator, password strength checker and username generator. All processing happens in your browser — no data ever sent to servers. Безкоштовний генератор надійних паролів, перевірка сили пароля та генератор логінів.">
+<meta name="keywords" content="password generator, strong password, password strength checker, username generator, secure password, free password tool, генератор паролів, перевірка пароля, надійний пароль, безкоштовно">
+<meta name="author" content="PassKit">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://passkit.app/">
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://passkit.app/">
+<meta property="og:title" content="PassKit — Free Password Generator & Strength Checker">
+<meta property="og:description" content="Generate strong passwords, check password strength and create unique usernames — all free, no registration, everything runs in your browser.">
+<meta property="og:image" content="https://passkit.app/og-image.png">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="uk_UA">
+<meta property="og:site_name" content="PassKit">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:url" content="https://passkit.app/">
+<meta name="twitter:title" content="PassKit — Free Password Generator & Strength Checker">
+<meta name="twitter:description" content="Generate strong passwords, check strength & create usernames. Free, no signup, runs entirely in your browser.">
+<meta name="twitter:image" content="https://passkit.app/og-image.png">
+
+<!-- hreflang for bilingual -->
+<link rel="alternate" hreflang="en" href="https://passkit.app/?lang=en">
+<link rel="alternate" hreflang="uk" href="https://passkit.app/?lang=uk">
+<link rel="alternate" hreflang="x-default" href="https://passkit.app/">
+
+<!-- Structured Data / Schema.org -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "PassKit",
+  "url": "https://passkit.app/",
+  "description": "Free password generator, password strength checker and username generator. Runs entirely in your browser.",
+  "applicationCategory": "SecurityApplication",
+  "operatingSystem": "Any",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "featureList": [
+    "Strong password generator",
+    "Password strength checker",
+    "Entropy calculation",
+    "Crack time estimation",
+    "Username / login generator",
+    "Client-side only — no server"
+  ],
+  "browserRequirements": "Requires JavaScript",
+  "inLanguage": ["en", "uk"]
+}
+</script>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0E0E12;
+    --surface: #16161C;
+    --surface2: #1E1E27;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.14);
+    --text: #F0EFF8;
+    --muted: #8A899A;
+    --accent: #7B6EF6;
+    --accent-light: #A99EFA;
+    --accent-dim: rgba(123,110,246,0.15);
+    --green: #4ADE80;
+    --green-dim: rgba(74,222,128,0.12);
+    --amber: #FBA94C;
+    --red: #F87171;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Inter', sans-serif;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* NAV */
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 2rem;
+    border-bottom: 0.5px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: rgba(14,14,18,0.85);
+    backdrop-filter: blur(12px);
+    z-index: 100;
+  }
+
+  .logo {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    color: var(--text);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .logo-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: inline-block;
+  }
+
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 6px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-size: 13px;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: var(--radius-sm);
+    transition: color 0.15s, background 0.15s;
+  }
+
+  .nav-links a:hover, .nav-links a.active {
+    color: var(--text);
+    background: var(--surface2);
+  }
+
+  /* LANGUAGE SWITCHER */
+  .lang-switcher {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 3px;
+  }
+
+  .lang-btn {
+    padding: 4px 10px;
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 500;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.03em;
+  }
+
+  .lang-btn.active {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .lang-btn:hover:not(.active) { color: var(--text); background: var(--surface2); }
+
+  /* HERO */
+  .hero {
+    text-align: center;
+    padding: 5rem 2rem 4rem;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--accent-light);
+    background: var(--accent-dim);
+    border: 0.5px solid rgba(123,110,246,0.3);
+    padding: 4px 12px;
+    border-radius: 99px;
+    margin-bottom: 1.5rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .hero h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 600;
+    letter-spacing: -0.04em;
+    line-height: 1.15;
+    margin-bottom: 1rem;
+    color: var(--text);
+  }
+
+  .hero h1 span { color: var(--accent-light); }
+
+  .hero p {
+    font-size: 16px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  /* TOOLS TABS */
+  .tools-section {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 1.5rem 6rem;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 4px;
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 4px;
+    margin-bottom: 1.5rem;
+  }
+
+  .tab-btn {
+    flex: 1;
+    padding: 9px 12px;
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+
+  .tab-btn:hover { color: var(--text); background: var(--surface2); }
+
+  .tab-btn.active {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* CARD */
+  .card {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.75rem;
+  }
+
+  /* PASSWORD DISPLAY */
+  .pwd-display {
+    background: var(--surface2);
+    border: 0.5px solid var(--border2);
+    border-radius: var(--radius-sm);
+    padding: 1.25rem 1rem 1.25rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 1.5rem;
+    min-height: 64px;
+  }
+
+  .pwd-text {
+    font-family: var(--mono);
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text);
+    flex: 1;
+    word-break: break-all;
+    line-height: 1.5;
+  }
+
+  .pwd-text.placeholder { color: var(--muted); font-size: 14px; font-family: var(--sans); }
+
+  /* STRENGTH */
+  .strength-wrap { margin-bottom: 1.5rem; }
+
+  .strength-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 13px;
+  }
+
+  .strength-meta span:first-child { color: var(--muted); }
+
+  .strength-track {
+    height: 5px;
+    background: var(--border);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .strength-fill {
+    height: 100%;
+    border-radius: 99px;
+    transition: width 0.35s cubic-bezier(.4,0,.2,1), background 0.35s;
+    width: 0%;
+  }
+
+  /* SLIDER */
+  .slider-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 1.25rem;
+  }
+
+  .slider-label {
+    font-size: 13px;
+    color: var(--muted);
+    min-width: 110px;
+  }
+
+  .slider-row input[type=range] {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 4px;
+    background: var(--border2);
+    border-radius: 99px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  .slider-row input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    border: 2px solid var(--bg);
+    transition: transform 0.15s;
+  }
+
+  .slider-row input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.15); }
+
+  .slider-val {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    min-width: 28px;
+    text-align: right;
+  }
+
+  /* CHECKBOXES */
+  .options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 1.5rem;
+  }
+
+  .opt-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--text);
+    cursor: pointer;
+    padding: 10px 14px;
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface2);
+    transition: border-color 0.15s;
+    user-select: none;
+  }
+
+  .opt-label:hover { border-color: var(--border2); }
+
+  .opt-label input[type=checkbox] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border: 1.5px solid var(--border2);
+    border-radius: 4px;
+    background: transparent;
+    cursor: pointer;
+    flex-shrink: 0;
+    position: relative;
+    transition: background 0.15s, border-color 0.15s;
+  }
+
+  .opt-label input[type=checkbox]:checked {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .opt-label input[type=checkbox]:checked::after {
+    content: '';
+    position: absolute;
+    left: 3px;
+    top: 1px;
+    width: 5px;
+    height: 8px;
+    border: 2px solid #fff;
+    border-top: none;
+    border-left: none;
+    transform: rotate(45deg);
+  }
+
+  /* BUTTONS */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 11px 20px;
+    border-radius: var(--radius-sm);
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    border: none;
+    text-decoration: none;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+    width: 100%;
+  }
+
+  .btn-primary:hover { background: #6a5ee8; }
+  .btn-primary:active { transform: scale(0.98); }
+
+  .btn-ghost {
+    background: var(--surface2);
+    color: var(--muted);
+    border: 0.5px solid var(--border);
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+
+  .btn-ghost:hover { color: var(--text); border-color: var(--border2); }
+
+  /* CHECKER INPUT */
+  .check-input-wrap {
+    position: relative;
+    margin-bottom: 1.5rem;
+  }
+
+  .check-input {
+    width: 100%;
+    background: var(--surface2);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px 48px 14px 16px;
+    font-family: var(--mono);
+    font-size: 15px;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .check-input:focus { border-color: var(--accent); }
+  .check-input::placeholder { color: var(--muted); font-family: var(--sans); font-size: 14px; }
+
+  .eye-btn {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 4px;
+    font-size: 18px;
+    line-height: 1;
+    transition: color 0.15s;
+  }
+
+  .eye-btn:hover { color: var(--text); }
+
+  /* STATS GRID */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 1.5rem;
+  }
+
+  .stat-card {
+    background: var(--surface2);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    text-align: center;
+  }
+
+  .stat-val {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+    letter-spacing: -0.02em;
+  }
+
+  .stat-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+
+  /* TIPS */
+  .tips-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+
+  .tip-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    background: var(--surface2);
+    border: 0.5px solid var(--border);
+  }
+
+  .tip-icon { font-size: 15px; flex-shrink: 0; }
+  .tip-ok { color: var(--green); }
+  .tip-warn { color: var(--amber); }
+  .tip-bad { color: var(--red); }
+
+  /* LOGIN GENERATOR */
+  .login-styles {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 1.5rem;
+  }
+
+  .style-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface2);
+    cursor: pointer;
+    transition: border-color 0.15s;
+    user-select: none;
+  }
+
+  .style-option:hover { border-color: var(--border2); }
+  .style-option.selected { border-color: var(--accent); background: var(--accent-dim); }
+  .style-option input[type=radio] { display: none; }
+
+  .style-dot {
+    width: 16px;
+    height: 16px;
+    border: 1.5px solid var(--border2);
+    border-radius: 50%;
+    flex-shrink: 0;
+    position: relative;
+    transition: border-color 0.15s;
+  }
+
+  .style-option.selected .style-dot {
+    border-color: var(--accent);
+    background: var(--accent);
+  }
+
+  .style-option.selected .style-dot::after {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #fff;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .style-info { flex: 1; }
+  .style-name { font-size: 13px; font-weight: 500; color: var(--text); }
+  .style-example { font-size: 12px; color: var(--muted); font-family: var(--mono); margin-top: 2px; }
+
+  /* RESULTS LIST */
+  .results-list { display: flex; flex-direction: column; gap: 6px; margin-top: 1.25rem; }
+
+  .result-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--surface2);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+  }
+
+  .result-text {
+    flex: 1;
+    font-family: var(--mono);
+    font-size: 14px;
+    color: var(--text);
+  }
+
+  .copy-tiny {
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 14px;
+    padding: 4px 6px;
+    border-radius: 4px;
+    transition: color 0.15s;
+  }
+
+  .copy-tiny:hover { color: var(--text); }
+
+  /* FOOTER */
+  footer {
+    border-top: 0.5px solid var(--border);
+    padding: 2rem;
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  footer a { color: var(--muted); text-decoration: none; }
+  footer a:hover { color: var(--text); }
+
+  /* SECTION LABEL */
+  .section-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 10px;
+    font-weight: 500;
+  }
+
+  /* DIVIDER */
+  .divider {
+    height: 0.5px;
+    background: var(--border);
+    margin: 1.5rem 0;
+  }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--surface2);
+    border: 0.5px solid var(--border2);
+    border-radius: var(--radius-sm);
+    padding: 10px 18px;
+    font-size: 13px;
+    color: var(--text);
+    opacity: 0;
+    transition: opacity 0.2s, transform 0.2s;
+    pointer-events: none;
+    z-index: 999;
+    white-space: nowrap;
+  }
+
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* PASSWORD MANAGER CARDS */
+  .pm-card {
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    background: var(--surface2);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    transition: border-color 0.15s, transform 0.15s;
+    gap: 10px;
+  }
+
+  .pm-card:hover {
+    border-color: var(--border2);
+    transform: translateY(-2px);
+  }
+
+  .pm-logo-wrap {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .pm-info { flex: 1; }
+
+  .pm-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 3px;
+  }
+
+  .pm-desc {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  .pm-badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 99px;
+    align-self: flex-start;
+  }
+
+  .pm-badge-free {
+    background: rgba(74,222,128,0.12);
+    color: var(--green);
+    border: 0.5px solid rgba(74,222,128,0.25);
+  }
+
+  .pm-badge-paid {
+    background: rgba(251,169,76,0.12);
+    color: var(--amber);
+    border: 0.5px solid rgba(251,169,76,0.25);
+  }
+
+  @media (max-width: 560px) {
+    nav { padding: 1rem; }
+    .hero { padding: 3rem 1.25rem 2.5rem; }
+    .tools-section { padding: 0 1rem 4rem; }
+    .options-grid { grid-template-columns: 1fr; }
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+    .tabs { flex-wrap: wrap; }
+    .card { padding: 1.25rem; }
+    .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="logo" href="#">
+    <span class="logo-dot"></span>PassKit
+  </a>
+  <div class="nav-right">
+    <ul class="nav-links">
+      <li><a href="#tools" class="active" data-uk="Інструменти" data-en="Tools">Інструменти</a></li>
+      <li><a href="#about" data-uk="Про безпеку" data-en="Security">Про безпеку</a></li>
+    </ul>
+    <div class="lang-switcher" role="group" aria-label="Language switcher">
+      <button class="lang-btn active" onclick="setLang('uk')" id="btn-uk">UK</button>
+      <button class="lang-btn" onclick="setLang('en')" id="btn-en">EN</button>
+    </div>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-badge" id="hero-badge">🔒 Все в браузері — ніяких серверів</div>
+  <h1 id="hero-h1">Надійні паролі<br><span id="hero-span">за секунди</span></h1>
+  <p id="hero-p">Генератор паролів, перевірка сили і генератор логінів. Безкоштовно, без реєстрації.</p>
+</div>
+
+<div class="tools-section" id="tools">
+  <div class="tabs" role="tablist">
+    <button class="tab-btn active" role="tab" onclick="switchTab('generator', this)" id="tab-btn-gen">🎲 Генератор паролів</button>
+    <button class="tab-btn" role="tab" onclick="switchTab('checker', this)" id="tab-btn-chk">🔍 Перевірка сили</button>
+    <button class="tab-btn" role="tab" onclick="switchTab('login', this)" id="tab-btn-log">👤 Генератор логінів</button>
+  </div>
+
+  <!-- TAB 1: PASSWORD GENERATOR -->
+  <div class="tab-panel active" id="tab-generator">
+    <div class="card">
+      <div class="pwd-display" id="gen-display-wrap">
+        <span class="pwd-text placeholder" id="gen-pwd-text">Натисни кнопку нижче</span>
+        <button class="btn btn-ghost" id="gen-copy-btn" onclick="copyGenPassword()">Копіювати</button>
+      </div>
+
+      <div class="strength-wrap" id="gen-strength-wrap" style="display:none;">
+        <div class="strength-meta">
+          <span id="lbl-pwd-strength-gen">Сила пароля</span>
+          <span id="gen-strength-label" style="font-weight:500;"></span>
+        </div>
+        <div class="strength-track">
+          <div class="strength-fill" id="gen-strength-fill"></div>
+        </div>
+      </div>
+
+      <p class="section-label" id="lbl-length">Довжина</p>
+      <div class="slider-row">
+        <span class="slider-label" id="lbl-chars">Символів:</span>
+        <input type="range" id="gen-length" min="8" max="64" value="16" step="1"
+          oninput="document.getElementById('gen-length-val').textContent=this.value; generatePassword();">
+        <span class="slider-val" id="gen-length-val">16</span>
+      </div>
+
+      <p class="section-label" id="lbl-chars-section">Символи</p>
+      <div class="options-grid">
+        <label class="opt-label">
+          <input type="checkbox" id="gen-upper" checked onchange="generatePassword()">
+          <span id="lbl-upper">Великі A–Z</span>
+        </label>
+        <label class="opt-label">
+          <input type="checkbox" id="gen-lower" checked onchange="generatePassword()">
+          <span id="lbl-lower">Малі a–z</span>
+        </label>
+        <label class="opt-label">
+          <input type="checkbox" id="gen-nums" checked onchange="generatePassword()">
+          <span id="lbl-nums">Цифри 0–9</span>
+        </label>
+        <label class="opt-label">
+          <input type="checkbox" id="gen-syms" onchange="generatePassword()">
+          <span id="lbl-syms">Символи !@#$</span>
+        </label>
+      </div>
+
+      <div class="options-grid" style="margin-top:-4px;">
+        <label class="opt-label">
+          <input type="checkbox" id="gen-no-ambig" onchange="generatePassword()">
+          <span id="lbl-no-ambig">Без схожих (0, O, l, 1)</span>
+        </label>
+        <label class="opt-label">
+          <input type="checkbox" id="gen-no-dup" onchange="generatePassword()">
+          <span id="lbl-no-dup">Без повторів</span>
+        </label>
+      </div>
+
+      <div class="divider"></div>
+
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-primary" onclick="generatePassword()" style="flex:1;" id="btn-generate">
+          ↻ Згенерувати новий
+        </button>
+        <button class="btn btn-ghost" onclick="copyGenPassword()" id="btn-copy-pwd">Копіювати</button>
+      </div>
+
+    </div>
+
+    <div style="margin-top:1rem; padding: 1rem 1.25rem; background: var(--green-dim); border: 0.5px solid rgba(74,222,128,0.2); border-radius:var(--radius-sm);">
+      <p style="font-size:13px; color:var(--muted);" id="security-note">
+        ✅ <strong style="color:var(--text);">Безпечно:</strong> пароль генерується прямо у твоєму браузері за допомогою <code style="font-family:var(--mono); font-size:12px; background:var(--surface2); padding:1px 5px; border-radius:4px;">crypto.getRandomValues</code> і <strong>ніколи не передається</strong> на жоден сервер.
+      </p>
+    </div>
+  </div>
+
+  <!-- TAB 2: STRENGTH CHECKER -->
+  <div class="tab-panel" id="tab-checker">
+    <div class="card">
+      <p class="section-label" id="lbl-enter-pwd">Введи пароль</p>
+      <div class="check-input-wrap">
+        <input class="check-input" type="password" id="check-input"
+          placeholder="Введи пароль для перевірки..."
+          oninput="checkPassword(this.value)" autocomplete="off">
+        <button class="eye-btn" id="eye-btn" onclick="toggleEye()" title="Показати/приховати">👁</button>
+      </div>
+
+      <div id="check-results" style="display:none;">
+        <div class="strength-wrap">
+          <div class="strength-meta">
+            <span id="lbl-pwd-strength-chk">Сила пароля</span>
+            <span id="check-strength-label" style="font-weight:500;"></span>
+          </div>
+          <div class="strength-track">
+            <div class="strength-fill" id="check-strength-fill"></div>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-val" id="stat-length">0</div>
+            <div class="stat-label" id="lbl-stat-chars">Символів</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val" id="stat-entropy">0</div>
+            <div class="stat-label" id="lbl-stat-entropy">Ентропія (біт)</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val" id="stat-time">—</div>
+            <div class="stat-label" id="lbl-stat-time">Час злому</div>
+          </div>
+        </div>
+
+        <p class="section-label" id="lbl-analysis">Аналіз</p>
+        <ul class="tips-list" id="check-tips"></ul>
+      </div>
+
+      <div id="check-empty" style="padding:2rem 0; text-align:center; color:var(--muted); font-size:14px;" id="check-empty-msg">
+        Введи будь-який пароль — побачиш детальний аналіз
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 3: LOGIN GENERATOR -->
+  <div class="tab-panel" id="tab-login">
+    <div class="card">
+
+      <p class="section-label" id="lbl-your-words">Твої слова (необов'язково)</p>
+      <p style="font-size:13px; color:var(--muted); margin-bottom:10px;" id="lbl-words-hint">Введи власні слова через кому — вони будуть використані у логіні</p>
+      <input class="check-input" type="text" id="custom-words"
+        placeholder="наприклад: wolf, dark, 1994, pro"
+        style="margin-bottom:1.25rem; font-family:var(--sans); font-size:14px;">
+
+      <p class="section-label" id="lbl-login-style">Стиль логіна</p>
+      <div class="login-styles" id="login-styles">
+        <label class="style-option selected">
+          <input type="radio" name="login-style" value="word-num" checked onchange="updateLoginStyle(this.parentElement)">
+          <div class="style-dot"></div>
+          <div class="style-info">
+            <div class="style-name" id="style-name-1">Слово + число</div>
+            <div class="style-example" id="ex-word-num">wolf_42 · dark_pro · 1994_user</div>
+          </div>
+        </label>
+        <label class="style-option">
+          <input type="radio" name="login-style" value="two-words" onchange="updateLoginStyle(this.parentElement)">
+          <div class="style-dot"></div>
+          <div class="style-info">
+            <div class="style-name" id="style-name-2">Два слова</div>
+            <div class="style-example" id="ex-two-words">darkwolf · prowolf · 1994dark</div>
+          </div>
+        </label>
+        <label class="style-option">
+          <input type="radio" name="login-style" value="word-suffix" onchange="updateLoginStyle(this.parentElement)">
+          <div class="style-dot"></div>
+          <div class="style-info">
+            <div class="style-name" id="style-name-3">Слово + суфікс</div>
+            <div class="style-example" id="ex-word-suffix">wolf_x · dark.pro · 1994_ok</div>
+          </div>
+        </label>
+        <label class="style-option">
+          <input type="radio" name="login-style" value="initials-num" onchange="updateLoginStyle(this.parentElement)">
+          <div class="style-dot"></div>
+          <div class="style-info">
+            <div class="style-name" id="style-name-4">Ініціали + рік</div>
+            <div class="style-example">jd_1994 · mk_2001 · as_1987</div>
+          </div>
+        </label>
+        <label class="style-option">
+          <input type="radio" name="login-style" value="random" onchange="updateLoginStyle(this.parentElement)">
+          <div class="style-dot"></div>
+          <div class="style-info">
+            <div class="style-name" id="style-name-5">Випадковий рядок</div>
+            <div class="style-example">x7kqm · r2pnv · a4wsz</div>
+          </div>
+        </label>
+      </div>
+
+      <div class="divider"></div>
+      <button class="btn btn-primary" onclick="generateLogins()" id="btn-gen-logins">↻ Згенерувати 5 варіантів</button>
+
+      <div class="results-list" id="login-results"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<div id="about" style="max-width:720px; margin:0 auto; padding: 0 1.5rem 6rem;">
+  <div class="card">
+    <p class="section-label" id="lbl-why-strong">Чому важливий надійний пароль</p>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:0.5rem;">
+      <div style="padding:1rem; background:var(--surface2); border-radius:var(--radius-sm); border:0.5px solid var(--border);">
+        <div style="font-size:24px; margin-bottom:8px;">🔓</div>
+        <p style="font-size:13px; font-weight:500; margin-bottom:4px; color:var(--text);" id="stat1-title">81% зломів</p>
+        <p style="font-size:12px; color:var(--muted);" id="stat1-desc">відбуваються через слабкі або повторно використані паролі</p>
+      </div>
+      <div style="padding:1rem; background:var(--surface2); border-radius:var(--radius-sm); border:0.5px solid var(--border);">
+        <div style="font-size:24px; margin-bottom:8px;">⚡</div>
+        <p style="font-size:13px; font-weight:500; margin-bottom:4px; color:var(--text);" id="stat2-title">За секунди</p>
+        <p style="font-size:12px; color:var(--muted);" id="stat2-desc">зловмисники підбирають паролі коротше 8 символів</p>
+      </div>
+      <div style="padding:1rem; background:var(--surface2); border-radius:var(--radius-sm); border:0.5px solid var(--border);">
+        <div style="font-size:24px; margin-bottom:8px;">📱</div>
+        <p style="font-size:13px; font-weight:500; margin-bottom:4px; color:var(--text);" id="stat3-title">100+ паролів</p>
+        <p style="font-size:12px; color:var(--muted);" id="stat3-desc">в середньому у кожної людини — зберігай у менеджері, не в голові</p>
+      </div>
+      <div style="padding:1rem; background:var(--surface2); border-radius:var(--radius-sm); border:0.5px solid var(--border);">
+        <div style="font-size:24px; margin-bottom:8px;">🛡</div>
+        <p style="font-size:13px; font-weight:500; margin-bottom:4px; color:var(--text);" id="stat4-title">16+ символів</p>
+        <p style="font-size:12px; color:var(--muted);" id="stat4-desc">робить підбір пароля практично неможливим навіть для суперкомп'ютерів</p>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <p class="section-label" id="lbl-where-store">Де зберігати паролі</p>
+    <p style="font-size:13px; color:var(--muted); margin-bottom:1.25rem;" id="lbl-where-store-hint">Згенерував пароль — збережи його надійно. Менеджер паролів запам'ятає все замість тебе, достатньо знати один головний.</p>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;">
+
+      <a href="https://bitwarden.com" target="_blank" rel="noopener" class="pm-card">
+        <div class="pm-logo-wrap" style="background:#EEF2FF;">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L3 5.5V12c0 4.5 3.5 8.5 9 10 5.5-1.5 9-5.5 9-10V5.5L12 2z" fill="#175DDC"/>
+            <path d="M12 6.5L6 9v4.5c0 2.8 2.2 5.3 6 6.3 3.8-1 6-3.5 6-6.3V9L12 6.5z" fill="#175DDC" opacity=".3"/>
+            <path d="M10 11.5h4M12 9.5v4" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="pm-info">
+          <p class="pm-name">Bitwarden</p>
+          <p class="pm-desc" id="pm-bitwarden-desc">Відкритий код, всі платформи</p>
+        </div>
+        <span class="pm-badge pm-badge-free" id="pm-bitwarden-badge">Безкоштовно</span>
+      </a>
+
+      <a href="https://keepass.info" target="_blank" rel="noopener" class="pm-card">
+        <div class="pm-logo-wrap" style="background:#E8F5E9;">
+          <svg viewBox="0 0 24 24" width="28" height="28" xmlns="http://www.w3.org/2000/svg">
+            <rect x="3" y="11" width="18" height="11" rx="2" fill="#4CAF50"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="#4CAF50" stroke-width="2" fill="none" stroke-linecap="round"/>
+            <circle cx="12" cy="16" r="1.5" fill="#fff"/>
+            <path d="M12 17.5v2" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="pm-info">
+          <p class="pm-name">KeePass</p>
+          <p class="pm-desc" id="pm-keepass-desc">Локально, максимальна приватність</p>
+        </div>
+        <span class="pm-badge pm-badge-free" id="pm-keepass-badge">Безкоштовно</span>
+      </a>
+
+      <a href="https://1password.com" target="_blank" rel="noopener" class="pm-card">
+        <div class="pm-logo-wrap" style="background:#FFF3E0;">
+          <svg viewBox="0 0 24 24" width="28" height="28" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="10" fill="#0072C6"/>
+            <path d="M12 6C9.24 6 7 8.24 7 11c0 1.9 1.03 3.55 2.56 4.44L9 18h6l-.56-2.56A5 5 0 0 0 17 11c0-2.76-2.24-5-5-5z" fill="#fff"/>
+            <circle cx="12" cy="11" r="2" fill="#0072C6"/>
+          </svg>
+        </div>
+        <div class="pm-info">
+          <p class="pm-name">1Password</p>
+          <p class="pm-desc" id="pm-1pass-desc">Преміум для сімей і команд</p>
+        </div>
+        <span class="pm-badge pm-badge-paid" id="pm-1pass-badge">~$3/міс</span>
+      </a>
+
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p id="footer-text">PassKit — усі паролі генеруються локально у твоєму браузері</p>
+  <p style="margin-top:6px;"><a href="#" id="footer-privacy">Конфіденційність</a> · <a href="#" id="footer-contact">Контакти</a></p>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ======== TRANSLATIONS ========
+const T = {
+  uk: {
+    'hero-badge': '🔒 Все в браузері — ніяких серверів',
+    'hero-h1': 'Надійні паролі',
+    'hero-span': 'за секунди',
+    'hero-p': 'Генератор паролів, перевірка сили і генератор логінів. Безкоштовно, без реєстрації.',
+    'tab-btn-gen': '🎲 Генератор паролів',
+    'tab-btn-chk': '🔍 Перевірка сили',
+    'tab-btn-log': '👤 Генератор логінів',
+    'gen-pwd-placeholder': 'Натисни кнопку нижче',
+    'gen-copy-btn': 'Копіювати',
+    'btn-copy-pwd': 'Копіювати',
+    'lbl-pwd-strength-gen': 'Сила пароля',
+    'lbl-length': 'Довжина',
+    'lbl-chars': 'Символів:',
+    'lbl-chars-section': 'Символи',
+    'lbl-upper': 'Великі A–Z',
+    'lbl-lower': 'Малі a–z',
+    'lbl-nums': 'Цифри 0–9',
+    'lbl-syms': 'Символи !@#$',
+    'lbl-no-ambig': 'Без схожих (0, O, l, 1)',
+    'lbl-no-dup': 'Без повторів',
+    'btn-generate': '↻ Згенерувати новий',
+    'security-note': '✅ <strong style="color:var(--text);">Безпечно:</strong> пароль генерується прямо у твоєму браузері за допомогою <code style="font-family:var(--mono); font-size:12px; background:var(--surface2); padding:1px 5px; border-radius:4px;">crypto.getRandomValues</code> і <strong>ніколи не передається</strong> на жоден сервер.',
+    'lbl-enter-pwd': 'Введи пароль',
+    'check-placeholder': 'Введи пароль для перевірки...',
+    'lbl-pwd-strength-chk': 'Сила пароля',
+    'lbl-stat-chars': 'Символів',
+    'lbl-stat-entropy': 'Ентропія (біт)',
+    'lbl-stat-time': 'Час злому',
+    'lbl-analysis': 'Аналіз',
+    'check-empty-msg': 'Введи будь-який пароль — побачиш детальний аналіз',
+    'lbl-your-words': "Твої слова (необов'язково)",
+    'lbl-words-hint': 'Введи власні слова через кому — вони будуть використані у логіні',
+    'custom-words-placeholder': 'наприклад: wolf, dark, 1994, pro',
+    'lbl-login-style': 'Стиль логіна',
+    'style-name-1': 'Слово + число',
+    'style-name-2': 'Два слова',
+    'style-name-3': 'Слово + суфікс',
+    'style-name-4': 'Ініціали + рік',
+    'style-name-5': 'Випадковий рядок',
+    'btn-gen-logins': '↻ Згенерувати 5 варіантів',
+    'lbl-why-strong': 'Чому важливий надійний пароль',
+    'stat1-title': '81% зломів',
+    'stat1-desc': 'відбуваються через слабкі або повторно використані паролі',
+    'stat2-title': 'За секунди',
+    'stat2-desc': 'зловмисники підбирають паролі коротше 8 символів',
+    'stat3-title': '100+ паролів',
+    'stat3-desc': 'в середньому у кожної людини — зберігай у менеджері, не в голові',
+    'stat4-title': '16+ символів',
+    'stat4-desc': "робить підбір пароля практично неможливим навіть для суперкомп'ютерів",
+    'lbl-where-store': 'Де зберігати паролі',
+    'lbl-where-store-hint': "Згенерував пароль — збережи його надійно. Менеджер паролів запам'ятає все замість тебе, достатньо знати один головний.",
+    'pm-bitwarden-desc': 'Відкритий код, всі платформи',
+    'pm-bitwarden-badge': 'Безкоштовно',
+    'pm-keepass-desc': 'Локально, максимальна приватність',
+    'pm-keepass-badge': 'Безкоштовно',
+    'pm-1pass-desc': 'Преміум для сімей і команд',
+    'pm-1pass-badge': '~$3/міс',
+    'footer-text': 'PassKit — усі паролі генеруються локально у твоєму браузері',
+    'footer-privacy': 'Конфіденційність',
+    'footer-contact': 'Контакти',
+    'nav-tools': 'Інструменти',
+    'nav-about': 'Про безпеку',
+    'toast-copied': 'Скопійовано: ',
+    'toast-pwd-copied': 'Пароль скопійовано ✓',
+    'gen-copy-done': '✓ Скопійовано',
+    'gen-copy-reset': 'Копіювати',
+    'gen-no-type': 'Обери хоча б один тип',
+    // strength labels
+    'str-very-weak': 'Дуже слабкий',
+    'str-weak': 'Слабкий',
+    'str-medium': 'Середній',
+    'str-good': 'Добрий',
+    'str-strong': 'Сильний',
+    'str-very-strong': 'Дуже сильний',
+    'str-excellent': 'Відмінний',
+    // crack time
+    'ct-instant': 'миттєво',
+    'ct-sec': ' сек',
+    'ct-min': ' хв',
+    'ct-hr': ' год',
+    'ct-days': ' днів',
+    'ct-years': ' років',
+    // tips
+    'tip-too-short': 'Занадто короткий — мінімум 8 символів',
+    'tip-short': 'Рекомендуємо 12+ символів',
+    'tip-good-len': 'Хороша довжина (',
+    'tip-good-len-end': ' символів)',
+    'tip-no-upper': 'Додай великі літери (A–Z)',
+    'tip-has-upper': 'Є великі літери',
+    'tip-no-nums': 'Додай цифри',
+    'tip-has-nums': 'Є цифри',
+    'tip-no-syms': 'Додай спецсимволи (!@#$)',
+    'tip-has-syms': 'Є спецсимволи',
+    'tip-common': "Цей пароль є у списку найпоширеніших — змінити обов'язково!",
+  },
+  en: {
+    'hero-badge': '🔒 All in-browser — zero servers',
+    'hero-h1': 'Strong passwords',
+    'hero-span': 'in seconds',
+    'hero-p': 'Password generator, strength checker and username generator. Free, no sign-up required.',
+    'tab-btn-gen': '🎲 Password Generator',
+    'tab-btn-chk': '🔍 Strength Checker',
+    'tab-btn-log': '👤 Username Generator',
+    'gen-pwd-placeholder': 'Click the button below',
+    'gen-copy-btn': 'Copy',
+    'btn-copy-pwd': 'Copy',
+    'lbl-pwd-strength-gen': 'Password strength',
+    'lbl-length': 'Length',
+    'lbl-chars': 'Characters:',
+    'lbl-chars-section': 'Characters',
+    'lbl-upper': 'Uppercase A–Z',
+    'lbl-lower': 'Lowercase a–z',
+    'lbl-nums': 'Numbers 0–9',
+    'lbl-syms': 'Symbols !@#$',
+    'lbl-no-ambig': 'No ambiguous (0, O, l, 1)',
+    'lbl-no-dup': 'No duplicates',
+    'btn-generate': '↻ Generate new',
+    'security-note': '✅ <strong style="color:var(--text);">Secure:</strong> the password is generated directly in your browser using <code style="font-family:var(--mono); font-size:12px; background:var(--surface2); padding:1px 5px; border-radius:4px;">crypto.getRandomValues</code> and is <strong>never sent</strong> to any server.',
+    'lbl-enter-pwd': 'Enter password',
+    'check-placeholder': 'Type a password to check...',
+    'lbl-pwd-strength-chk': 'Password strength',
+    'lbl-stat-chars': 'Characters',
+    'lbl-stat-entropy': 'Entropy (bits)',
+    'lbl-stat-time': 'Crack time',
+    'lbl-analysis': 'Analysis',
+    'check-empty-msg': 'Enter any password — get a detailed analysis instantly',
+    'lbl-your-words': 'Your words (optional)',
+    'lbl-words-hint': 'Enter your own words separated by commas — they will be used in the username',
+    'custom-words-placeholder': 'e.g. wolf, dark, 1994, pro',
+    'lbl-login-style': 'Username style',
+    'style-name-1': 'Word + number',
+    'style-name-2': 'Two words',
+    'style-name-3': 'Word + suffix',
+    'style-name-4': 'Initials + year',
+    'style-name-5': 'Random string',
+    'btn-gen-logins': '↻ Generate 5 options',
+    'lbl-why-strong': 'Why strong passwords matter',
+    'stat1-title': '81% of breaches',
+    'stat1-desc': 'happen because of weak or reused passwords',
+    'stat2-title': 'In seconds',
+    'stat2-desc': 'attackers crack passwords shorter than 8 characters',
+    'stat3-title': '100+ passwords',
+    'stat3-desc': 'the average person has — use a manager, not your memory',
+    'stat4-title': '16+ characters',
+    'stat4-desc': 'makes brute-force practically impossible even for supercomputers',
+    'lbl-where-store': 'Where to store passwords',
+    'lbl-where-store-hint': 'Generated a password? Store it securely. A password manager remembers everything — you only need one master password.',
+    'pm-bitwarden-desc': 'Open source, all platforms',
+    'pm-bitwarden-badge': 'Free',
+    'pm-keepass-desc': 'Local storage, maximum privacy',
+    'pm-keepass-badge': 'Free',
+    'pm-1pass-desc': 'Premium for families & teams',
+    'pm-1pass-badge': '~$3/mo',
+    'footer-text': 'PassKit — all passwords generated locally in your browser',
+    'footer-privacy': 'Privacy',
+    'footer-contact': 'Contact',
+    'nav-tools': 'Tools',
+    'nav-about': 'Security',
+    'toast-copied': 'Copied: ',
+    'toast-pwd-copied': 'Password copied ✓',
+    'gen-copy-done': '✓ Copied',
+    'gen-copy-reset': 'Copy',
+    'gen-no-type': 'Select at least one type',
+    // strength labels
+    'str-very-weak': 'Very weak',
+    'str-weak': 'Weak',
+    'str-medium': 'Medium',
+    'str-good': 'Good',
+    'str-strong': 'Strong',
+    'str-very-strong': 'Very strong',
+    'str-excellent': 'Excellent',
+    // crack time
+    'ct-instant': 'instantly',
+    'ct-sec': ' sec',
+    'ct-min': ' min',
+    'ct-hr': ' hr',
+    'ct-days': ' days',
+    'ct-years': ' years',
+    // tips
+    'tip-too-short': 'Too short — minimum 8 characters',
+    'tip-short': 'We recommend 12+ characters',
+    'tip-good-len': 'Good length (',
+    'tip-good-len-end': ' chars)',
+    'tip-no-upper': 'Add uppercase letters (A–Z)',
+    'tip-has-upper': 'Has uppercase letters',
+    'tip-no-nums': 'Add numbers',
+    'tip-has-nums': 'Has numbers',
+    'tip-no-syms': 'Add special symbols (!@#$)',
+    'tip-has-syms': 'Has special symbols',
+    'tip-common': 'This password is in the most common list — change it immediately!',
+  }
+};
+
+let LANG = 'uk';
+
+function t(key) { return T[LANG][key] || T['uk'][key] || key; }
+
+function setLang(lang) {
+  LANG = lang;
+  document.documentElement.lang = lang === 'uk' ? 'uk' : 'en';
+  document.getElementById('btn-uk').classList.toggle('active', lang === 'uk');
+  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+
+  // Update all translatable text nodes
+  const textIds = [
+    'hero-badge','hero-h1','hero-span','hero-p',
+    'tab-btn-gen','tab-btn-chk','tab-btn-log',
+    'gen-copy-btn','btn-copy-pwd',
+    'lbl-pwd-strength-gen','lbl-length','lbl-chars','lbl-chars-section',
+    'lbl-upper','lbl-lower','lbl-nums','lbl-syms','lbl-no-ambig','lbl-no-dup',
+    'btn-generate',
+    'lbl-enter-pwd','lbl-pwd-strength-chk',
+    'lbl-stat-chars','lbl-stat-entropy','lbl-stat-time','lbl-analysis',
+    'lbl-your-words','lbl-words-hint','lbl-login-style',
+    'style-name-1','style-name-2','style-name-3','style-name-4','style-name-5',
+    'btn-gen-logins',
+    'lbl-why-strong',
+    'stat1-title','stat1-desc','stat2-title','stat2-desc',
+    'stat3-title','stat3-desc','stat4-title','stat4-desc',
+    'lbl-where-store','lbl-where-store-hint',
+    'pm-bitwarden-desc','pm-bitwarden-badge','pm-keepass-desc','pm-keepass-badge',
+    'pm-1pass-desc','pm-1pass-badge',
+    'footer-text','footer-privacy','footer-contact',
+  ];
+
+  textIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = t(id);
+  });
+
+  // innerHTML ones (security note)
+  document.getElementById('security-note').innerHTML = t('security-note');
+
+  // check-empty-msg
+  document.getElementById('check-empty').textContent = t('check-empty-msg');
+
+  // placeholders
+  document.getElementById('gen-pwd-text').textContent = t('gen-pwd-placeholder');
+  document.getElementById('check-input').placeholder = t('check-placeholder');
+  document.getElementById('custom-words').placeholder = t('custom-words-placeholder');
+
+  // nav links
+  const navLinks = document.querySelectorAll('.nav-links a');
+  if (navLinks[0]) navLinks[0].textContent = t('nav-tools');
+  if (navLinks[1]) navLinks[1].textContent = t('nav-about');
+
+  // Re-run generator to update strength labels
+  generatePassword();
+
+  // Update URL param
+  const url = new URL(window.location);
+  url.searchParams.set('lang', lang);
+  history.replaceState({}, '', url);
+}
+
+// ======== TABS ========
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ======== TOAST ========
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 1800);
+}
+
+// ======== STRENGTH ENGINE ========
+function calcStrength(pwd) {
+  if (!pwd) return { score: 0, label: '', color: '', pct: 0, entropy: 0, crackTime: '—' };
+  const len = pwd.length;
+  let charset = 0;
+  if (/[a-z]/.test(pwd)) charset += 26;
+  if (/[A-Z]/.test(pwd)) charset += 26;
+  if (/[0-9]/.test(pwd)) charset += 10;
+  if (/[^a-zA-Z0-9]/.test(pwd)) charset += 32;
+  const entropy = Math.round(len * Math.log2(charset || 1));
+
+  let score = 0;
+  if (len >= 8) score++;
+  if (len >= 12) score++;
+  if (len >= 16) score++;
+  if (/[A-Z]/.test(pwd)) score++;
+  if (/[0-9]/.test(pwd)) score++;
+  if (/[^a-zA-Z0-9]/.test(pwd)) score++;
+  if (len >= 20) score++;
+
+  const common = ['password','123456','qwerty','111111','abc123','iloveyou','letmein','monkey','dragon'];
+  if (common.includes(pwd.toLowerCase())) score = 0;
+
+  const labelKeys = ['str-very-weak','str-weak','str-weak','str-medium','str-good','str-strong','str-very-strong','str-excellent'];
+  const colors = ['#F87171','#F87171','#FBA94C','#FBA94C','#FBA94C','#4ADE80','#4ADE80','#4ADE80'];
+  const pcts   = [8, 16, 25, 40, 55, 70, 85, 100];
+
+  const idx = Math.min(score, 7);
+
+  // Crack time (guesses at 1B/s)
+  let guesses = Math.pow(charset || 1, len);
+  let seconds = guesses / 1e9 / 2;
+  let crackTime;
+  if (seconds < 1) crackTime = t('ct-instant');
+  else if (seconds < 60) crackTime = Math.round(seconds) + t('ct-sec');
+  else if (seconds < 3600) crackTime = Math.round(seconds/60) + t('ct-min');
+  else if (seconds < 86400) crackTime = Math.round(seconds/3600) + t('ct-hr');
+  else if (seconds < 31536000) crackTime = Math.round(seconds/86400) + t('ct-days');
+  else if (seconds < 31536000000) crackTime = Math.round(seconds/31536000) + t('ct-years');
+  else crackTime = '∞';
+
+  return { score: idx, label: t(labelKeys[idx]), color: colors[idx], pct: pcts[idx], entropy, crackTime };
+}
+
+// ======== GENERATOR ========
+function generatePassword() {
+  const len = parseInt(document.getElementById('gen-length').value);
+  const upper = document.getElementById('gen-upper').checked;
+  const lower = document.getElementById('gen-lower').checked;
+  const nums  = document.getElementById('gen-nums').checked;
+  const syms  = document.getElementById('gen-syms').checked;
+  const noAmb = document.getElementById('gen-no-ambig').checked;
+  const noDup = document.getElementById('gen-no-dup').checked;
+
+  let chars = '';
+  if (upper) chars += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  if (lower) chars += 'abcdefghijklmnopqrstuvwxyz';
+  if (nums)  chars += '0123456789';
+  if (syms)  chars += '!@#$%^&*()_+-=[]{}|;:,.<>?';
+  if (noAmb) chars = chars.replace(/[0O1lI]/g, '');
+
+  if (!chars) {
+    const el = document.getElementById('gen-pwd-text');
+    el.textContent = t('gen-no-type');
+    el.className = 'pwd-text placeholder';
+    document.getElementById('gen-strength-wrap').style.display = 'none';
+    return;
+  }
+
+  let available = chars.split('');
+  let password = '';
+  const arr = new Uint32Array(len);
+  crypto.getRandomValues(arr);
+
+  for (let i = 0; i < len; i++) {
+    if (noDup && available.length === 0) break;
+    const pool = noDup ? available : chars.split('');
+    const idx = arr[i] % pool.length;
+    password += pool[idx];
+    if (noDup) available.splice(idx, 1);
+  }
+
+  const el = document.getElementById('gen-pwd-text');
+  el.textContent = password;
+  el.className = 'pwd-text';
+
+  const s = calcStrength(password);
+  document.getElementById('gen-strength-wrap').style.display = 'block';
+  document.getElementById('gen-strength-label').textContent = s.label;
+  document.getElementById('gen-strength-label').style.color = s.color;
+  document.getElementById('gen-strength-fill').style.width = s.pct + '%';
+  document.getElementById('gen-strength-fill').style.background = s.color;
+}
+
+function copyGenPassword() {
+  const pwd = document.getElementById('gen-pwd-text').textContent;
+  const placeholder = t('gen-pwd-placeholder');
+  const noType = t('gen-no-type');
+  if (!pwd || pwd === placeholder || pwd === noType) return;
+  navigator.clipboard.writeText(pwd).then(() => {
+    const btn = document.getElementById('gen-copy-btn');
+    const btn2 = document.getElementById('btn-copy-pwd');
+    btn.textContent = t('gen-copy-done');
+    btn2.textContent = t('gen-copy-done');
+    setTimeout(() => {
+      btn.textContent = t('gen-copy-reset');
+      btn2.textContent = t('gen-copy-reset');
+    }, 2000);
+    showToast(t('toast-pwd-copied'));
+  });
+}
+
+// ======== CHECKER ========
+function toggleEye() {
+  const inp = document.getElementById('check-input');
+  const btn = document.getElementById('eye-btn');
+  if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈'; }
+  else { inp.type = 'password'; btn.textContent = '👁'; }
+}
+
+function checkPassword(val) {
+  const resultsEl = document.getElementById('check-results');
+  const emptyEl   = document.getElementById('check-empty');
+
+  if (!val) {
+    resultsEl.style.display = 'none';
+    emptyEl.style.display = 'block';
+    return;
+  }
+
+  resultsEl.style.display = 'block';
+  emptyEl.style.display = 'none';
+
+  const s = calcStrength(val);
+  document.getElementById('check-strength-label').textContent = s.label;
+  document.getElementById('check-strength-label').style.color = s.color;
+  document.getElementById('check-strength-fill').style.width = s.pct + '%';
+  document.getElementById('check-strength-fill').style.background = s.color;
+  document.getElementById('stat-length').textContent = val.length;
+  document.getElementById('stat-entropy').textContent = s.entropy;
+  document.getElementById('stat-time').textContent = s.crackTime;
+
+  const tips = [];
+  if (val.length < 8) tips.push({ cls: 'tip-bad', icon: '✗', text: t('tip-too-short') });
+  else if (val.length < 12) tips.push({ cls: 'tip-warn', icon: '⚠', text: t('tip-short') });
+  else tips.push({ cls: 'tip-ok', icon: '✓', text: t('tip-good-len') + val.length + t('tip-good-len-end') });
+
+  if (!/[A-Z]/.test(val)) tips.push({ cls: 'tip-warn', icon: '⚠', text: t('tip-no-upper') });
+  else tips.push({ cls: 'tip-ok', icon: '✓', text: t('tip-has-upper') });
+
+  if (!/[0-9]/.test(val)) tips.push({ cls: 'tip-warn', icon: '⚠', text: t('tip-no-nums') });
+  else tips.push({ cls: 'tip-ok', icon: '✓', text: t('tip-has-nums') });
+
+  if (!/[^a-zA-Z0-9]/.test(val)) tips.push({ cls: 'tip-warn', icon: '⚠', text: t('tip-no-syms') });
+  else tips.push({ cls: 'tip-ok', icon: '✓', text: t('tip-has-syms') });
+
+  const common = ['password','123456','qwerty','111111','abc123','iloveyou','letmein'];
+  if (common.includes(val.toLowerCase())) tips.push({ cls: 'tip-bad', icon: '✗', text: t('tip-common') });
+
+  const tipsEl = document.getElementById('check-tips');
+  tipsEl.innerHTML = tips.map(tp =>
+    `<li class="tip-item"><span class="tip-icon ${tp.cls}">${tp.icon}</span><span style="font-size:13px;color:var(--text)">${tp.text}</span></li>`
+  ).join('');
+}
+
+// ======== LOGIN GENERATOR ========
+const defaultAdj = ['swift','brave','calm','dark','epic','fast','gold','iron','jade','keen','loud','mild','neat','nice','pale','pure','rare','rich','safe','slim','true','vast','warm','wise','bold','cool','deep','fine','firm','free','good','kind','long','open','real','soft','wild'];
+const defaultNouns = ['fox','bear','wolf','lion','hawk','deer','seal','crab','lynx','bull','dove','frog','crow','puma','ibis','orca','mink','vole','wren','toad','newt','moth','lark','kite','ibex','hare','gull','fish','duck','colt'];
+const letters = 'abcdefghijklmnopqrstuvwxyz';
+const suffixes = ['x','ok','pro','go','me','hi','up','gg','io','co'];
+const separators = ['_','.',''];
+
+function rnd(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function rndInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+function getWordPool() {
+  const raw = document.getElementById('custom-words').value.trim();
+  if (!raw) return null;
+  const words = raw.split(',').map(w => w.trim().toLowerCase()).filter(w => w.length > 0);
+  return words.length > 0 ? words : null;
+}
+
+function pickWord(pool, fallback) { return rnd(pool || fallback); }
+
+function getYearFromPool(pool) {
+  if (!pool) return null;
+  const years = pool.filter(w => /^\d{4}$/.test(w));
+  return years.length > 0 ? rnd(years) : null;
+}
+
+function genLogin(style) {
+  const pool = getWordPool();
+  const words = pool || defaultAdj;
+  const words2 = pool || defaultNouns;
+
+  switch(style) {
+    case 'word-num': {
+      const year = getYearFromPool(pool);
+      return rnd(words) + rnd(separators) + (year || rndInt(10, 999));
+    }
+    case 'two-words': {
+      let w1 = rnd(words), w2 = rnd(words2);
+      if (w1 === w2 && words.length > 1) w2 = rnd(words2);
+      return w1 + rnd(separators) + w2;
+    }
+    case 'word-suffix':
+      return rnd(words) + rnd(separators) + rnd(suffixes);
+    case 'initials-num': {
+      const year = getYearFromPool(pool);
+      let initials;
+      if (pool) {
+        const textWords = pool.filter(w => !/^\d+$/.test(w));
+        const src = textWords.length > 0 ? textWords : pool;
+        initials = rnd(src)[0] + rnd(src)[0];
+      } else {
+        initials = rnd(letters) + rnd(letters);
+      }
+      return initials + '_' + (year || rndInt(1970, 2010));
+    }
+    case 'random': {
+      let s = '';
+      for (let i = 0; i < 6; i++) s += rnd(letters + '0123456789');
+      return s;
+    }
+    default:
+      return rnd(words) + rndInt(100, 999);
+  }
+}
+
+function updateExamples() {
+  const pool = getWordPool();
+  document.querySelectorAll('.style-option').forEach(opt => {
+    const radio = opt.querySelector('input[type=radio]');
+    const exEl = opt.querySelector('.style-example');
+    if (!exEl || !radio) return;
+    if (!pool) return;
+    const style = radio.value;
+    exEl.textContent = genLogin(style) + ' · ' + genLogin(style) + ' · ' + genLogin(style);
+  });
+}
+
+function updateLoginStyle(el) {
+  document.querySelectorAll('.style-option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function generateLogins() {
+  const style = document.querySelector('input[name="login-style"]:checked').value;
+  const logins = Array.from({length: 5}, () => genLogin(style));
+  const list = document.getElementById('login-results');
+  list.innerHTML = logins.map(l => `
+    <div class="result-item">
+      <span class="result-text">${l}</span>
+      <button class="copy-tiny" onclick="copyText('${l}')" title="Copy">⎘</button>
+    </div>
+  `).join('');
+}
+
+document.getElementById('custom-words').addEventListener('input', updateExamples);
+
+function copyText(text) {
+  navigator.clipboard.writeText(text).then(() => showToast(t('toast-copied') + text));
+}
+
+// ======== INIT ========
+// Detect preferred language from URL param or browser
+const urlLang = new URLSearchParams(window.location.search).get('lang');
+const browserLang = navigator.language?.startsWith('uk') ? 'uk' : 'en';
+const initLang = urlLang === 'en' ? 'en' : (urlLang === 'uk' ? 'uk' : browserLang);
+
+if (initLang !== 'uk') {
+  setLang(initLang);
+} else {
+  generatePassword();
+}
+</script>
+</body>
+</html>
